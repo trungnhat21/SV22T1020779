@@ -7,29 +7,31 @@
     <h4 class="text-uppercase">Chi tiết đơn hàng #@order?.OrderID</h4>
     <p>Ngày đặt: <b>@order?.OrderTime.ToString("dd/MM/yyyy HH:mm")</b></p>
 
-    <table class="table table-bordered mt-3">
-        <thead class="bg-light">
-            <tr>
-                <th>Tên mặt hàng</th>
-                <th class="text-center">Số lượng</th>
-                <th class="text-end">Đơn giá</th>
-                <th class="text-end">Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var detail in Model)
-            {
-                <tr>
-                    <td>@detail.ProductName</td>
-                    <td class="text-center">@detail.Quantity</td>
-                    <td class="text-end">@detail.SalePrice.ToString("N0")</td>
-                    <td class="text-end fw-bold">
-                        @((detail.Quantity * detail.SalePrice).ToString("N0")) <span class="text-danger">VNĐ</span>
-                    </td>
+    <div class="table-responsive bg-white p-3 shadow-sm rounded">
+        <table class="table table-bordered align-middle mt-0 mb-0">
+            <thead class="table-light">
+                <tr style="border-bottom: 2px solid #dee2e6;">
+                    <th class="py-3">Tên mặt hàng</th>
+                    <th class="text-center py-3">Số lượng</th>
+                    <th class="text-end py-3">Đơn giá</th>
+                    <th class="text-end py-3">Thành tiền</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var detail in Model)
+                {
+                    <tr>
+                        <td class="py-3">@detail.ProductName</td>
+                        <td class="text-center">@detail.Quantity</td>
+                        <td class="text-end">@detail.SalePrice.ToString("N0")</td>
+                        <td class="text-end fw-bold">
+                            @((detail.Quantity * detail.SalePrice).ToString("N0")) <span class="text-danger small">VNĐ</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 
     <div class="container mt-4">
         <div class="d-flex gap-2">
@@ -50,3 +52,24 @@
         </div>
     </div>
 </div>
+<style>
+    .bg-white {
+        background-color: #ffffff !important;
+    }
+
+    .table {
+        --bs-table-bg: #ffffff !important;
+        background-color: #ffffff !important;
+    }
+
+        .table th, .table td {
+            background-color: #ffffff !important;
+            border-color: #dee2e6 !important;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa !important;
+            color: #333;
+            font-weight: 600;
+        }
+</style>
