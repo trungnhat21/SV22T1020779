@@ -6,9 +6,13 @@
     var userDisplayName = HttpContextAccessor.HttpContext.Session.GetString("UserDisplayName");
 }
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
     <div class="container">
-        <a class="navbar-brand fw-bold text-primary fs-3" href="/">W/n <span class="text-dark">SHOP</span></a>
+        <a class="navbar-brand d-flex align-items-center fw-bold text-primary fs-3" href="/">
+            <img src="~/images/logo.png" alt="Logo" style="height: 60px; width: auto;" class="me-2">
+
+            <span>W/n <span class="text-dark">SHOP</span></span>
+        </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
             <span class="navbar-toggler-icon"></span>
@@ -80,6 +84,7 @@
 <style>
     body {
         padding-top: 80px;
+        background-color: #f2e6d9;
     }
 
     .nav-link.bg-light:hover {

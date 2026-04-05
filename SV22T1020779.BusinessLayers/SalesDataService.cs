@@ -1,7 +1,6 @@
 ﻿using SV22T1020779.DataLayers.Interfaces;
 using SV22T1020779.DataLayers.SQLServer;
 using SV22T1020779.Models.Common;
-using SV22T1020779.Models.Partner;
 using SV22T1020779.Models.Sales;
 
 namespace SV22T1020779.BusinessLayers
