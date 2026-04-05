@@ -1,0 +1,33 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow border-0 p-4">
+                <h3 class="text-center text-primary fw-bold mb-4">ĐĂNG NHẬP</h3>
+
+                <form asp-action="Login" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+
+                    <div class="mb-3">
+                        <label class="fw-bold small">Email:</label>
+                        <input type="email" name="email" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="fw-bold small">Mật khẩu:</label>
+                        <input type="password" name="password" class="form-control" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2 mt-2">ĐĂNG NHẬP</button>
+
+                    <div class="text-center mt-3">
+                        <p class="small text-muted">Chưa có tài khoản? <a href="/Account/Register">Đăng ký ngay</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

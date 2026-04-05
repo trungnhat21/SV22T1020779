@@ -1,0 +1,48 @@
+﻿@model IEnumerable<CartItem>
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-success">
+        <tr>
+            <th class="text-center">#</th>
+            <th style="width:auto">Tên hàng</th>
+            <th class="text-center" style="width:100px">ĐVT</th>
+            <th class="text-center" style="width:100px">SL</th>
+            <th class="text-end" style="width:150px">Giá</th>
+            <th class="text-end" style="width:150px">Thành tiền</th>
+            <th style="width:80px"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            int stt = 1;
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td class="text-center">@(stt++)</td>
+                    <td>@item.ProductName</td>
+                    <td class="text-center">@item.Unit</td>
+                    <td class="text-center">@item.Quantity</td>
+                    <td class="text-end">@item.SalePrice.ToString("N0")</td>
+                    <td class="text-end">@item.TotalPrice.ToString("N0")</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-danger"
+                           href="@Url.Action("DecreaseQuantity", "Order", new { id = item.ProductID })">
+                            <i class="bi bi-dash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="7" class="text-center">Giỏ hàng trống</td></tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="5" class="text-end">Tổng cộng:</th>
+            <th class="text-end text-danger">@Model.Sum(x => x.TotalPrice).ToString("N0")</th>
+            <th></th>
+        </tr>
+    </tfoot>
+</table>

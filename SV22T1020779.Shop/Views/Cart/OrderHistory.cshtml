@@ -1,0 +1,54 @@
+﻿@model IEnumerable<SV22T1020779.Models.Sales.OrderViewInfo>
+@{
+    ViewBag.Title = "Lịch sử mua hàng";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4 text-uppercase fw-bold text-primary">Lịch sử mua hàng</h3>
+
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover align-middle bg-white">
+            <thead class="table-light">
+                <tr>
+                    <th class="py-3">Mã đơn</th>
+                    <th>Ngày đặt</th>
+                    <th>Địa chỉ nhận hàng</th>
+                    <th class="text-center">Trạng thái</th>
+                    <th class="text-end">Tổng tiền</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold">#@item.OrderID</td>
+                        <td>@item.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@item.DeliveryAddress</td>
+                        <td class="text-center">
+                            <span class="badge @(item.Status == OrderStatusEnum.Completed ? "bg-success" : "bg-primary")">
+                                @item.StatusDescription
+                            </span>
+                        </td>
+                        <td class="text-end fw-bold">
+                            @item.TotalPrice.ToString("N0") <span class="text-danger small">VNĐ</span>
+                        </td>
+                        <td class="text-center">
+                            <a href="~/Cart/OrderDetail/@item.OrderID" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                <i class="fa-solid fa-eye me-1"></i> Chi tiết
+                            </a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            Bạn chưa có lịch sử mua hàng nào.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

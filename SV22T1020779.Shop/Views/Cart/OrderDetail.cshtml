@@ -1,0 +1,52 @@
+﻿@model IEnumerable<SV22T1020779.Models.Sales.OrderDetailViewInfo>
+@{
+    var order = ViewBag.Order as SV22T1020779.Models.Sales.OrderViewInfo;
+}
+
+<div class="container mt-4">
+    <h4 class="text-uppercase">Chi tiết đơn hàng #@order?.OrderID</h4>
+    <p>Ngày đặt: <b>@order?.OrderTime.ToString("dd/MM/yyyy HH:mm")</b></p>
+
+    <table class="table table-bordered mt-3">
+        <thead class="bg-light">
+            <tr>
+                <th>Tên mặt hàng</th>
+                <th class="text-center">Số lượng</th>
+                <th class="text-end">Đơn giá</th>
+                <th class="text-end">Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detail in Model)
+            {
+                <tr>
+                    <td>@detail.ProductName</td>
+                    <td class="text-center">@detail.Quantity</td>
+                    <td class="text-end">@detail.SalePrice.ToString("N0")</td>
+                    <td class="text-end fw-bold">
+                        @((detail.Quantity * detail.SalePrice).ToString("N0")) <span class="text-danger">VNĐ</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="container mt-4">
+        <div class="d-flex gap-2">
+            <a href="/Cart/MyOrders" class="btn btn-secondary">
+                <i class="fa fa-arrow-left"></i> Quay lại
+            </a>
+
+            @if (order?.Status == OrderStatusEnum.New)
+            {
+                <form asp-action="CancelOrder" asp-controller="Cart" method="post"
+                      onsubmit="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể hoàn tác.');">
+                    <input type="hidden" name="id" value="@order.OrderID" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Hủy đơn hàng
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,159 @@
+﻿@model IEnumerable<SV22T1020779.Models.Sales.OrderDetailViewInfo>
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    decimal total = 0;
+    int totalQuantity = Model?.Sum(i => i.Quantity) ?? 0;
+    Context.Session.SetInt32("CartCount", totalQuantity);
+}
+
+<div class="container mt-5">
+    <h2 class="text-primary fw-bold mb-4">GIỎ HÀNG CỦA BẠN</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm rounded-4 overflow-hidden border-0">
+                <table class="table align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-center" style="width: 160px;">Số lượng</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                var subTotal = item.Quantity * item.SalePrice;
+                                total += subTotal;
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="http://localhost:48417/images/products/@(string.IsNullOrEmpty(item.Photo) ? "nophoto.png" : item.Photo)"
+                                                 style="width:50px; height:50px; object-fit:cover;" class="rounded me-2"
+                                                 onerror="this.src='/images/products/nophoto.png'">
+                                            <div>
+                                                <span class="fw-bold d-block">@item.ProductName</span>
+                                                <small class="text-muted">Mã SP: @item.ProductID</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <form action="/Cart/UpdateQuantity" method="post" id="form-@item.ProductID" class="d-flex align-items-center justify-content-center">
+                                            <input type="hidden" name="productID" value="@item.ProductID" />
+
+                                            <input type="number" name="quantity" value="@item.Quantity" min="1"
+                                                   id="input-@item.ProductID" readonly
+                                                   class="form-control form-control-sm text-center bg-light border-0 shadow-none"
+                                                   style="width: 65px;"
+                                                   onblur="this.form.submit()">
+                                        </form>
+                                    </td>
+                                    <td class="text-end">@item.SalePrice.ToString("N0")</td>
+                                    <td class="text-end fw-bold text-primary">@subTotal.ToString("N0")</td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <a href="javascript:void(0)" class="text-primary" title="Sửa số lượng" onclick="enableEdit('@item.ProductID')">
+                                                <i class="fa-solid fa-pen-to-square fs-5"></i>
+                                            </a>
+                                            <a href="/Cart/Remove?productID=@item.ProductID"
+                                               class="text-danger" title="Xóa khỏi giỏ"
+                                               onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                                                <i class="fa fa-trash fs-5"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center p-5 text-muted">
+                                    <i class="fa-solid fa-cart-shopping fs-1 mb-3 d-block opacity-25"></i>
+                                    <p>Giỏ hàng của bạn đang trống.</p>
+                                    <a href="/" class="btn btn-primary btn-sm mt-2">Mua sắm ngay</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-4 shadow-sm rounded-4 border-0" style="border: 1px solid #dee2e6 !important;">
+                <h4 class="fw-bold">TỔNG TIỀN</h4>
+                <h2 class="text-danger fw-bold">@total.ToString("N0") <small class="fs-6 text-dark">VNĐ</small></h2>
+                <hr>
+                <div class="mb-4">
+                    <p class="d-flex justify-content-between mb-2">
+                        <span>Số lượng mặt hàng:</span>
+                        <span class="fw-bold">@totalQuantity</span>
+                    </p>
+                    <p class="d-flex justify-content-between mb-1">
+                        <span>Tạm tính:</span>
+                        <span class="fw-bold">@total.ToString("N0") VNĐ</span>
+                    </p>
+                    <p class="d-flex justify-content-between text-muted small">
+                        <span>Phí vận chuyển:</span>
+                        <span class="text-success fw-bold">Miễn phí</span>
+                    </p>
+                </div>
+
+                <button type="button" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm py-3 mb-2"
+                        data-bs-toggle="modal" data-bs-target="#orderModal" @(total == 0 ? "disabled" : "")>
+                    ĐẶT HÀNG NGAY
+                </button>
+
+                <a href="/" class="btn btn-link w-100 text-decoration-none text-muted">
+                    <i class="fa-solid fa-arrow-left me-2"></i>Tiếp tục mua hàng
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4">
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h5 class="modal-title fw-bold">THÔNG TIN GIAO HÀNG</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/Cart/ConfirmOrder" method="post">
+                <div class="modal-body p-4"> 
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Địa chỉ nhận hàng cụ thể</label>
+                        <textarea name="Address" class="form-control" rows="3" required placeholder="Số nhà, tên đường, xã/phường..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">ĐÓNG</button>
+                    <button type="submit" class="btn btn-primary px-4 fw-bold shadow-sm">XÁC NHẬN ĐẶT HÀNG</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function enableEdit(productId) {
+            const input = document.getElementById('input-' + productId);
+            const btnSave = document.getElementById('btn-save-' + productId);
+
+            input.removeAttribute('readonly');
+            input.classList.remove('bg-light', 'border-0');
+            input.classList.add('border', 'border-primary');
+
+            btnSave.classList.remove('d-none');
+            input.focus();
+
+            input.select();
+        }
+    </script>
+}

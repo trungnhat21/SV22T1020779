@@ -1,0 +1,218 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <aside class="col-lg-3 d-none d-lg-block">
+            <div class="card shadow-sm mb-4 rounded-4" style="border: 2px solid #dee2e6 !important;">
+                <div class="card-header bg-white fw-bold border-0 pt-3">
+                    <i class="fa fa-list me-2 text-primary"></i>DANH MỤC HÀNG HÓA
+                </div>
+                <div class="category-wrapper">
+                    @await Component.InvokeAsync("CategoryMenu")
+                </div>
+            </div>
+
+            <div class="card shadow-sm rounded-4" style="border: 2px solid #dee2e6 !important;">
+                <div class="card-header bg-white fw-bold border-0 pt-3">
+                    <i class="fa fa-search me-2 text-primary"></i>TÌM KIẾM MẶT HÀNG
+                </div>
+                <div class="card-body">
+                    <form id="formSearch">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Tên mặt hàng</label>
+                            <input type="text" name="searchValue" class="form-control form-control-sm" placeholder="Nhập tên cần tìm...">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Khoảng giá (VNĐ)</label>
+                            <input type="number" name="minPrice" class="form-control form-control-sm mb-2" placeholder="Từ" value="0">
+                            <input type="number" name="maxPrice" class="form-control form-control-sm" placeholder="Đến" value="0">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm w-100 shadow-sm fw-bold">TÌM KIẾM</button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+
+        <div class="col-lg-9">
+
+            <div id="heroCarousel" class="carousel slide mb-4 shadow-sm rounded-4 overflow-hidden" data-bs-ride="carousel" data-bs-interval="5000">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"></button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"></button>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3"></button>
+                </div>
+
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" height="300" style="object-fit: cover;">
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-25 rounded-3">
+                            <h2 class="fw-bold">Siêu Sale Cuối Năm</h2>
+                            <p>Giảm giá lên đến 50% cho tất cả mặt hàng điện tử.</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" height="300" style="object-fit: cover;">
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-25 rounded-3">
+                            <h2 class="fw-bold">Bộ Sưu Tập Mới</h2>
+                            <p>Khám phá phong cách thời trang dẫn đầu xu hướng.</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" height="300" style="object-fit: cover;">
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-25 rounded-3">
+                            <h2 class="fw-bold">Đồ Gia Dụng Thông Minh</h2>
+                            <p>Nâng tầm không gian sống của bạn ngay hôm nay.</p>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://images.unsplash.com/photo-1491933382434-500287f9b54b?auto=format&fit=crop&w=1200&q=80" class="d-block w-100" height="300" style="object-fit: cover;">
+                        <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-25 rounded-3">
+                            <h2 class="fw-bold">Ưu Đãi Đặc Biệt</h2>
+                            <p>Đăng ký thành viên để nhận voucher giảm giá thêm 10%.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+
+            <h4 class="fw-bold mb-4 text-uppercase">Sản phẩm mới nhất</h4>
+
+            <div id="searchResult">
+                <div class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        var selectedCatId = 0;
+
+        function doSearch(page) {
+            var $result = $("#searchResult");
+            $result.css("opacity", "0.5");
+
+            var postData = $("#formSearch").serializeArray();
+            postData.push({ name: "page", value: page });
+            postData.push({ name: "pageSize", value: 18 });
+            postData.push({ name: "categoryID", value: selectedCatId });
+
+            $.ajax({
+                url: "/Product/Search",
+                type: "GET",
+                data: postData,
+                success: function (data) {
+                    $result.html(data).css("opacity", "1");
+                },
+                error: function () {
+                    $result.css("opacity", "1");
+                    console.error("Lỗi tải sản phẩm");
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            doSearch(1);
+
+            $(".category-link").off("click").on("click", function (e) {
+                e.preventDefault();
+                document.getElementById("formSearch").reset();
+                selectedCatId = $(this).data("id");
+                $(".category-link").removeClass("active bg-light text-primary fw-bold");
+                $(this).addClass("active bg-light text-primary fw-bold");
+                doSearch(1);
+            });
+
+            $("#formSearch").off("submit").on("submit", function (e) {
+                e.preventDefault();
+                doSearch(1);
+            });
+        });
+
+        $(document).on("click", ".pagination a", function (e) {
+            e.preventDefault();
+            var page = $(this).attr("data-page");
+            if(page) {
+                doSearch(page);
+            }
+        });
+    </script>
+}
+
+<style>
+    .category-link {
+        transition: all 0.3s ease !important;
+        background: transparent !important;
+        border: none !important;
+        color: #6c757d;
+    }
+
+        .category-link:hover {
+            color: #0d6efd !important;
+            font-weight: bold !important;
+            padding-left: 1.5rem !important;
+            background: transparent !important;
+        }
+
+        .category-link.active {
+            color: #0d6efd !important;
+            background-color: rgba(13, 110, 253, 0.05) !important;
+            font-weight: bold;
+        }
+
+    .category-scroll-container {
+        max-height: 350px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        display: block !important;
+    }
+
+        .category-scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .category-scroll-container::-webkit-scrollbar-thumb {
+            background: #dee2e6;
+            border-radius: 10px;
+        }
+
+            .category-scroll-container::-webkit-scrollbar-thumb:hover {
+                background: #0d6efd;
+            }
+
+    .product-card {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        background-color: #fff;
+        border: 2px solid #0d6efd !important;
+        overflow: hidden;
+    }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(13, 110, 253, 0.2) !important;
+        }
+
+    #searchResult .col-md-2,
+    #searchResult .col-md-3,
+    #searchResult .col-lg-4 {
+        padding: 10px;
+    }
+</style>

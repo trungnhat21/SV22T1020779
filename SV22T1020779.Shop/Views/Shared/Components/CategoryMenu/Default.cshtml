@@ -1,0 +1,15 @@
+﻿@model IEnumerable<SV22T1020779.Models.Catalog.Category>
+
+<div class="category-scroll-container">
+    <div class="list-group list-group-flush">
+        @foreach (var item in Model)
+        {
+            <a href="javascript:void(0)"
+               class="list-group-item list-group-item-action border-0 py-3 d-flex align-items-center category-link"
+               data-id="@item.CategoryID">
+                <i class="fa fa-chevron-right me-2 small text-primary" style="font-size: 10px;"></i>
+                <span class="fw-medium">@item.CategoryName</span>
+            </a>
+        }
+    </div>
+</div>

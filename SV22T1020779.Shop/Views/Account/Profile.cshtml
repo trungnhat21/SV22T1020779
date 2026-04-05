@@ -1,0 +1,168 @@
+﻿@model AccountCustomer
+@{
+    ViewData["Title"] = "Thông tin cá nhân";
+}
+
+<div class="container mt-5">
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>@TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm text-center p-4 rounded-4" style="border: 2px solid #0d6efd !important;">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 shadow" style="width: 100px; height: 100px;">
+                    <i class="fa-solid fa-user fa-3x"></i>
+                </div>
+                <h4 class="fw-bold mb-1">@Model.CustomerName</h4>
+                <p class="text-muted small">@Model.Email</p>
+                <hr>
+
+                <div class="d-grid gap-2">
+                    <a href="/" class="btn btn-outline-secondary btn-sm text-start border-0">
+                        <i class="fa-solid fa-house me-2"></i> Trang chủ
+                    </a>
+
+                    <a href="/Account/ChangePassword" class="btn btn-outline-primary btn-sm text-start border-0">
+                        <i class="fa-solid fa-key me-2"></i> Đổi mật khẩu
+                    </a>
+
+                    <a href="/Account/Logout" class="btn btn-outline-danger btn-sm text-start border-0">
+                        <i class="fa-solid fa-right-from-bracket me-2"></i> Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm p-4 rounded-4">
+                <h4 class="fw-bold text-primary mb-4 border-bottom pb-2">
+                    <i class="fa-solid fa-address-card me-2"></i>THÔNG TIN TÀI KHOẢN
+                </h4>
+
+                <form action="/Account/UpdateProfile" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="CustomerID" value="@Model.CustomerID" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-bold">Họ và tên</label>
+                            <input type="text" name="CustomerName" class="form-control border-0 border-bottom rounded-0 bg-light" value="@Model.CustomerName" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-bold">Tên giao dịch</label>
+                            <input type="text" name="ContactName" class="form-control border-0 border-bottom rounded-0 bg-light" value="@Model.ContactName" required />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-bold">Email (Tài khoản)</label>
+                            <input type="email" name="Email" class="form-control border-0 border-bottom rounded-0" value="@Model.Email" readonly style="background-color: #f8f9fa;" />
+                            <span class="text-muted" style="font-size: 11px;">* Không thể thay đổi email đăng nhập</span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small fw-bold">Điện thoại</label>
+                            <input type="text" name="Phone" class="form-control border-0 border-bottom rounded-0 bg-light" value="@Model.Phone" />
+                        </div>
+                        <div class="col-md-12">
+                            <label class="text-muted small fw-bold">Tỉnh thành</label>
+                            <select name="Province" class="form-control border-0 border-bottom rounded-0 bg-light">
+                                <option value="">-- Chọn tỉnh/thành --</option>
+                                @if (ViewBag.Provinces != null)
+                                {
+                                    foreach (var item in ViewBag.Provinces)
+                                    {
+                                        if (item.ProvinceName == Model.Province)
+                                        {
+                                            <option value="@item.ProvinceName" selected>@item.ProvinceName</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@item.ProvinceName">@item.ProvinceName</option>
+                                        }
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-end">
+                        <button type="submit" class="btn btn-warning fw-bold px-5 text-white shadow-sm">
+                            <i class="fa-solid fa-floppy-disk me-2"></i>LƯU THÔNG TIN
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        box-shadow: none;
+        border-color: #0d6efd !important;
+        background-color: #fff !important;
+    }
+
+    .btn-sm.text-start {
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .btn-sm.text-start:hover {
+            background-color: rgba(13, 110, 253, 0.05) !important;
+            padding-left: 1.5rem !important;
+            font-weight: bold !important;
+        }
+
+    .btn-outline-primary:hover {
+        color: #0d6efd !important;
+    }
+
+    .btn-outline-danger:hover {
+        color: #dc3545 !important;
+        background-color: rgba(220, 53, 69, 0.05) !important;
+    }
+
+    .btn-outline-secondary:hover {
+        color: #6c757d !important;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            var alertMessage = $(".alert");
+            if (alertMessage.length > 0) {
+                setTimeout(function () {
+                    alertMessage.fadeOut(500, function() {
+                        $(this).remove();
+                    });
+                }, 3000);
+            }
+
+
+            const form = $('form');
+            const submitBtn = form.find('button[type="submit"]');
+
+            const initialData = form.serialize();
+
+            form.on('input change', function () {
+
+                if (form.serialize() !== initialData) {
+                    submitBtn.prop('disabled', false).removeClass('opacity-50');
+                } else {
+                    submitBtn.prop('disabled', true).addClass('opacity-50');
+                }
+            });
+
+            submitBtn.prop('disabled', true).addClass('opacity-50');
+        });
+    </script>
+}
