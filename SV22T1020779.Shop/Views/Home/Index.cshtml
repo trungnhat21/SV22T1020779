@@ -27,8 +27,8 @@
 
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Khoảng giá (VNĐ)</label>
-                            <input type="number" name="minPrice" class="form-control form-control-sm mb-2" placeholder="Từ" value="0">
-                            <input type="number" name="maxPrice" class="form-control form-control-sm" placeholder="Đến" value="0">
+                            <input type="number" name="minPrice" id="minPrice" class="form-control form-control-sm mb-2" placeholder="Từ">
+                            <input type="number" name="maxPrice" id="maxPrice" class="form-control form-control-sm" placeholder="Đến">
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-sm w-100 shadow-sm fw-bold">TÌM KIẾM</button>
@@ -107,6 +107,15 @@
 
         function doSearch(page) {
             var $result = $("#searchResult");
+
+            var minPrice = parseFloat($("input[name='minPrice']").val()) || 0;
+            var maxPrice = parseFloat($("input[name='maxPrice']").val()) || 0;
+
+            if (minPrice > 0 && maxPrice > 0 && minPrice > maxPrice) {
+                alert("Khoảng giá không hợp lệ! Giá 'Từ' phải nhỏ hơn hoặc bằng giá 'Đến'.");
+                return;
+            }
+
             $result.css("opacity", "0.5");
 
             var postData = $("#formSearch").serializeArray();
@@ -120,10 +129,17 @@
                 data: postData,
                 success: function (data) {
                     $result.html(data).css("opacity", "1");
+
+                    if(page > 1) {
+                        $('html, body').animate({
+                            scrollTop: $("#searchResult").offset().top - 100
+                        }, 200);
+                    }
                 },
                 error: function () {
                     $result.css("opacity", "1");
                     console.error("Lỗi tải sản phẩm");
+                    alert("Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.");
                 }
             });
         }
@@ -133,10 +149,14 @@
 
             $(".category-link").off("click").on("click", function (e) {
                 e.preventDefault();
+
                 document.getElementById("formSearch").reset();
+
                 selectedCatId = $(this).data("id");
+
                 $(".category-link").removeClass("active bg-light text-primary fw-bold");
                 $(this).addClass("active bg-light text-primary fw-bold");
+
                 doSearch(1);
             });
 
