@@ -14,11 +14,20 @@
 
                     <div class="mb-3">
                         <label class="fw-bold small">Email:</label>
-                        <input type="email" name="email" class="form-control" required />
+                        <input type="email" name="email" class="form-control"
+                               required
+                               oninvalid="this.setCustomValidity('Vui lòng nhập đúng định dạng Email')"
+                               oninput="this.setCustomValidity('')" />
+                        @Html.ValidationMessage("email", "", new { @class = "text-danger small" })
                     </div>
+
                     <div class="mb-3">
                         <label class="fw-bold small">Mật khẩu:</label>
-                        <input type="password" name="password" class="form-control" required />
+                        <input type="password" name="password" class="form-control"
+                               required
+                               oninvalid="this.setCustomValidity('Mật khẩu không được để trống')"
+                               oninput="this.setCustomValidity('')" />
+                        @Html.ValidationMessage("password", "", new { @class = "text-danger small" })
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 fw-bold py-2 mt-2">ĐĂNG NHẬP</button>
@@ -31,3 +40,8 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+}

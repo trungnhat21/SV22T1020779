@@ -1,11 +1,13 @@
-﻿using SV22T1020779.BusinessLayers;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SV22T1020779.BusinessLayers;
 using SV22T1020779.Models.Catalog;
 using SV22T1020779.Models.Common;
 using SV22T1020779.Models.Partner;
 
 namespace SV22T1020779.Admin.Controllers
 {
+    [Authorize(Roles = $"{WebUserRoles.Administrator},{WebUserRoles.DataManager}")]
     public class CategoryController : Controller
     {
             public const string SEARCHS_CATEGORY = "SearchCategory";

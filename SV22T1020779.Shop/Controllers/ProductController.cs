@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SV22T1020779.BusinessLayers;
 using SV22T1020779.Models.Catalog;
+using SV22T1020779.Models.Common;
 
 namespace SV22T1020779.Shop.Controllers
 {
@@ -18,6 +19,30 @@ namespace SV22T1020779.Shop.Controllers
         /// <returns></returns>
         public async Task<IActionResult> Search(int page = 1, int pageSize = 24, string searchValue = "", decimal minPrice = 0, decimal maxPrice = 0, int categoryID = 0)
         {
+            ModelState.Clear();
+
+            if (minPrice < 0 || maxPrice < 0)
+            {
+                ModelState.AddModelError("PriceError", "Giá tìm kiếm không được là số âm.");
+            }
+
+            if (maxPrice > 0 && minPrice > maxPrice)
+            {
+                ModelState.AddModelError("PriceError", "Giá thấp nhất không được lớn hơn giá cao nhất.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errorResult = new PagedResult<Product>()
+                {
+                    Page = page,
+                    PageSize = pageSize,
+                    RowCount = 0,
+                    DataItems = new List<Product>()
+                };
+                return View(errorResult);
+            }
+
             var input = new ProductSearchInput()
             {
                 Page = page,

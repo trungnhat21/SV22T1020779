@@ -108,11 +108,19 @@
         function doSearch(page) {
             var $result = $("#searchResult");
 
-            var minPrice = parseFloat($("input[name='minPrice']").val()) || 0;
-            var maxPrice = parseFloat($("input[name='maxPrice']").val()) || 0;
+            var rawMin = $("input[name='minPrice']").val();
+            var rawMax = $("input[name='maxPrice']").val();
 
-            if (minPrice > 0 && maxPrice > 0 && minPrice > maxPrice) {
-                alert("Khoảng giá không hợp lệ! Giá 'Từ' phải nhỏ hơn hoặc bằng giá 'Đến'.");
+            var minPrice = parseFloat(rawMin) || 0;
+            var maxPrice = parseFloat(rawMax) || 0;
+
+            if ((rawMin !== "" && minPrice < 0) || (rawMax !== "" && maxPrice < 0)) {
+                $result.html('<div class="alert alert-danger shadow-sm"><i class="fa fa-exclamation-circle me-2"></i>Giá tiền không được là số âm.</div>');
+                return;
+            }
+
+            if (rawMin !== "" && rawMax !== "" && minPrice > maxPrice) {
+                $result.html('<div class="alert alert-danger shadow-sm"><i class="fa fa-exclamation-circle me-2"></i>Khoảng giá không hợp lệ! Giá "Từ" phải nhỏ hơn hoặc bằng giá "Đến".</div>');
                 return;
             }
 
@@ -138,8 +146,7 @@
                 },
                 error: function () {
                     $result.css("opacity", "1");
-                    console.error("Lỗi tải sản phẩm");
-                    alert("Không thể tải danh sách sản phẩm. Vui lòng thử lại sau.");
+                    $result.html('<div class="alert alert-warning">Không thể kết nối đến máy chủ. Vui lòng thử lại.</div>');
                 }
             });
         }
@@ -153,7 +160,6 @@
                 document.getElementById("formSearch").reset();
 
                 selectedCatId = $(this).data("id");
-
                 $(".category-link").removeClass("active bg-light text-primary fw-bold");
                 $(this).addClass("active bg-light text-primary fw-bold");
 

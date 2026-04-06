@@ -1,8 +1,9 @@
-﻿@model List<ProductPhoto>
+﻿@using SV22T1020779.Models.Catalog
+@model List<ProductPhoto>
 @{
     Layout = null;
     // ProductID được truyền từ controller hoặc từ view cha qua ViewBag
-    int productID = ViewBag.ProductID;
+    int productID = ViewBag.ProductID ?? 0;
 }
 <div class="row justify-content-center">
     <div class="col-12">

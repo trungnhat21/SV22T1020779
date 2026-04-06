@@ -147,6 +147,8 @@ namespace SV22T1020779.Admin.Controllers
                 ModelState.AddModelError("confirmPassword", "Vui lòng xác nhận mật khẩu mới");
             else if (newPassword != confirmPassword)
                 ModelState.AddModelError("confirmPassword", "Mật khẩu xác nhận không khớp");
+            else if (newPassword == oldPassword)
+                ModelState.AddModelError("newPassword", "Mật khẩu mới không được giống mật khẩu cũ");
 
             if (!ModelState.IsValid)
                 return View();

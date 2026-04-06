@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SV22T1020779.BusinessLayers;
 using SV22T1020779.Models.Common;
 using SV22T1020779.Models.HR;
 
 namespace SV22T1020779.Admin.Controllers
 {
+    [Authorize(Roles = $"{WebUserRoles.Administrator},{WebUserRoles.DataManager}")]
     public class EmployeeController : Controller
     {
+
         public const string SEARCHS_EMPLOYEE = "SearchEmployee";
         /// <summary>
         /// Nhập đầu vào tìm kiếm và hiển thị kết quả
@@ -121,115 +124,6 @@ namespace SV22T1020779.Admin.Controllers
             ApplicationContext.SetSessionData(SEARCHS_EMPLOYEE, input);
             return RedirectToAction("Index");
         }
-        //public async Task<IActionResult> ChangePassword(int id)
-        //{
-        //    ViewBag.Title = "Đổi mật khẩu nhân viên";
-
-        //    var employee = await HRDataService.GetEmployeeAsync(id);
-        //    if (employee == null)
-        //        return RedirectToAction("Index");
-
-        //    var model = new ChangePasswordEmployee()
-        //    {
-        //        EmployeeID = employee.EmployeeID,
-        //        FullName = employee.FullName,
-        //        Email = employee.Email,
-        //        IsWorking = employee.IsWorking
-        //    };
-
-        //    return View(model);
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> ChangePassword(ChangePasswordEmployee data)
-        //{
-        //    ViewBag.Title = "Đổi mật khẩu nhân viên";
-
-        //    var employee = await HRDataService.GetEmployeeAsync(data.EmployeeID);
-        //    if (employee == null)
-        //        return RedirectToAction("Index");
-
-        //    if (string.IsNullOrWhiteSpace(data.NewPassword))
-        //        ModelState.AddModelError(nameof(data.NewPassword), "Vui lòng nhập mật khẩu mới");
-
-        //    if (string.IsNullOrWhiteSpace(data.ConfirmPassword))
-        //        ModelState.AddModelError(nameof(data.ConfirmPassword), "Vui lòng xác nhận mật khẩu");
-
-        //    if (data.NewPassword != data.ConfirmPassword)
-        //        ModelState.AddModelError(nameof(data.ConfirmPassword), "Mật khẩu xác nhận không khớp");
-
-        //    if (employee.IsWorking)
-        //        ModelState.AddModelError("", "Tài khoản đang bị khóa, không thể đổi mật khẩu");
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View(data);
-        //    }
-
-        //    await HRDataService.ChangeEmployeePasswordAsync(data.Email, data.NewPassword);
-
-        //    return RedirectToAction("Index");
-        //}
-        //[HttpGet]
-        //public async Task<IActionResult> ChangeRoles(int id)
-        //{
-        //    ViewBag.Title = "Phân quyền nhân viên";
-
-        //    var employee = await HRDataService.GetEmployeeAsync(id);
-        //    if (employee == null)
-        //        return RedirectToAction("Index");
-        //    var currentRoles = (employee.RoleNames ?? "")
-        //                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
-        //                        .Select(r => r.Trim())
-        //                        .ToList();
-
-        //    var model = new ChangeRole()
-        //    {
-        //        EmployeeID = employee.EmployeeID,
-        //        FullName = employee.FullName,
-        //        Email = employee.Email,
-        //        IsWorking = employee.IsWorking,
-
-        //        Roles = HRDataService.GetRoleList().Select(r => new RoleItem
-        //        {
-        //            RoleName = r.RoleName,
-        //            Description = r.Description,
-        //            IsSelected = currentRoles.Any(cr => cr.Equals(r.RoleName.Trim(), StringComparison.OrdinalIgnoreCase))
-        //        }).ToList()
-        //    };
-
-        //    if (model.IsWorking)
-        //    {
-        //        ModelState.AddModelError("", "Nhân viên đã nghỉ việc, không thể thực hiện phân quyền");
-        //    }
-
-        //    return View("ChangeRole", model);
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> ChangeRole(ChangeRole data)
-        //{
-        //    ViewBag.Title = "Phân quyền nhân viên";
-
-        //    if (data.IsWorking)
-        //    {
-        //        ModelState.AddModelError("", "Nhân viên đã nghỉ việc hoặc tài khoản bị khóa, không thể lưu quyền");
-        //    }
-
-        //    if (data.Roles == null || data.Roles.Count == 0)
-        //    {
-        //        ModelState.AddModelError("", "Danh sách quyền trống");
-        //    }
-
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return View("ChangeRole", data);
-        //    }
-
-        //    var selectedRoles = string.Join(",", data.Roles.Where(r => r.IsSelected).Select(r => r.RoleName));
-
-        //    await HRDataService.ChangeEmployeeRolesAsync(data.EmployeeID, selectedRoles);
-
-        //    return RedirectToAction("Index");
-        //}
 
         [HttpGet]
         public async Task<IActionResult> ChangePassword(int id)

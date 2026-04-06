@@ -209,5 +209,24 @@ namespace SV22T1020779.Shop.Controllers
 
             return View(completedOrders);
         }
+        /// <summary>
+        /// Xóa toàn bộ giỏ hàng của khách hàng hiện tại
+        /// </summary>
+        public async Task<IActionResult> ClearCart()
+        {
+            int? customerID = HttpContext.Session.GetInt32("UserId");
+            if (customerID != null)
+            {
+                var cartOrder = await SalesDataService.GetCartOrderAsync(customerID.Value);
+                if (cartOrder != null)
+                {
+                    await SalesDataService.DeleteOrderAsync(cartOrder.OrderID);
+
+                    HttpContext.Session.SetInt32("CartCount", 0);
+                    TempData["Message"] = "Đã xóa toàn bộ giỏ hàng!";
+                }
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

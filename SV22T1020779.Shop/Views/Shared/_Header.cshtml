@@ -1,6 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
-
 @{
 
     var userDisplayName = HttpContextAccessor.HttpContext.Session.GetString("UserDisplayName");

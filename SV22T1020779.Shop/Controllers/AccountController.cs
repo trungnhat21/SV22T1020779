@@ -173,22 +173,43 @@ namespace SV22T1020779.Shop.Controllers
         /// <param name="confirmPassword">Nhập lại mật khẩu mới</param>
         /// <returns></returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult ChangePassword(string oldPassword, string newPassword, string confirmPassword)
         {
             int? customerId = HttpContext.Session.GetInt32("UserId");
             if (customerId == null) return RedirectToAction("Login");
 
             var user = CustomerAccountService.GetCustomer(customerId.Value);
-            if (user == null || user.Password != SecurityService.ToMD5(oldPassword))
+
+            if (string.IsNullOrWhiteSpace(oldPassword))
+                ModelState.AddModelError("", "Vui lòng nhập mật khẩu hiện tại");
+
+            if (string.IsNullOrWhiteSpace(newPassword))
+                ModelState.AddModelError("", "Vui lòng nhập mật khẩu mới");
+
+            if (!string.IsNullOrEmpty(newPassword) && newPassword.Length < 6)
+                ModelState.AddModelError("", "Mật khẩu mới phải có ít nhất 6 ký tự");
+
+            if (ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Mật khẩu cũ không chính xác");
-                return View();
+                if (user == null || user.Password != SecurityService.ToMD5(oldPassword))
+                {
+                    ModelState.AddModelError("", "Mật khẩu hiện tại không chính xác");
+                }
+
+                if (newPassword != confirmPassword)
+                {
+                    ModelState.AddModelError("", "Xác nhận mật khẩu mới không khớp");
+                }
+                if (oldPassword == newPassword)
+                {
+                    ModelState.AddModelError("", "Mật khẩu mới không được trùng với mật khẩu hiện tại");
+                }
             }
 
-            if (newPassword != confirmPassword)
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Xác nhận mật khẩu không khớp");
-                return View();
+                return View(user);
             }
 
             CustomerAccountService.ChangePassword(customerId.Value, newPassword);

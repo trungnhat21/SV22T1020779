@@ -226,9 +226,35 @@ namespace SV22T1020779.Admin.Controllers
         /// <summary>
         /// Hiển thị giao diện chỉnh sửa mặt hàng trong giỏ hàng
         /// </summary>
-        public IActionResult EditCartItem(int id = 0, int productId = 0)
+        /// <summary>
+        /// Hiển thị giao diện chỉnh sửa mặt hàng trong đơn hàng (Modal)
+        /// </summary>
+        public async Task<IActionResult> EditCartItem(int id = 0, int productId = 0)
         {
-            return View();
+            var model = await SalesDataService.GetDetailAsync(id, productId);
+            if (model == null)
+                return RedirectToAction("Detail", new { id });
+
+            return PartialView(model);
+        }
+
+        /// <summary>
+        /// Cập nhật chi tiết đơn hàng và quay lại trang chi tiết
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> UpdateCartItem(int orderID, int productID, int quantity, decimal salePrice)
+        {
+            if (quantity <= 0)
+            {
+                TempData["Error"] = "Số lượng phải lớn hơn 0";
+                return RedirectToAction("Detail", new { id = orderID });
+            }
+
+            bool result = await SalesDataService.SaveOrderDetailAsync(orderID, productID, quantity, salePrice);
+            if (!result)
+                TempData["Error"] = "Không thể cập nhật mặt hàng. Có thể đơn hàng đã được duyệt hoặc chuyển giao.";
+
+            return RedirectToAction("Detail", new { id = orderID });
         }
 
         /// <summary>
@@ -366,5 +392,8 @@ namespace SV22T1020779.Admin.Controllers
             }
             return RedirectToAction("Create");
         }
+
+
+
     }
 }

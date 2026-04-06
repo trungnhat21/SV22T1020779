@@ -108,7 +108,14 @@
                         data-bs-toggle="modal" data-bs-target="#orderModal" @(total == 0 ? "disabled" : "")>
                     ĐẶT HÀNG NGAY
                 </button>
-
+                @if (total > 0)
+                {
+                    <form action="/Cart/ClearCart" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa toàn bộ sản phẩm trong giỏ hàng?')">
+                        <button type="submit" class="btn btn-link w-100 text-decoration-none text-danger small">
+                            <i class="fa-solid fa-trash-can me-2"></i>Xóa toàn bộ giỏ hàng
+                        </button>
+                    </form>
+                }
                 <a href="/" class="btn btn-link w-100 text-decoration-none text-muted">
                     <i class="fa-solid fa-arrow-left me-2"></i>Tiếp tục mua hàng
                 </a>

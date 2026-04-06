@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using SV22T1020779.BusinessLayers;
 using SV22T1020779.Models.Catalog;
 
@@ -9,7 +8,6 @@ namespace SV22T1020779.Admin.Controllers
     /// Cung cấp các chức năng liên quan đến quản lý mặt hàng,
     /// bao gồm cả thuộc tính (Attribute) và ảnh (Photo) của mặt hàng.
     /// </summary>
-    [Authorize(Roles = $"{WebUserRoles.Administrator},{WebUserRoles.DataManager}")]
     public class ProductController : Controller
     {
         public const int PAGESIZE = 20;
@@ -42,6 +40,20 @@ namespace SV22T1020779.Admin.Controllers
         /// </summary>
         public async Task<IActionResult> Search(ProductSearchInput input)
         {
+            if (input.MinPrice < 0 || input.MaxPrice < 0)
+            {
+                return BadRequest("Giá từ và Giá đến không được là số âm");
+            }
+            if (input.MinPrice > 0 && input.MaxPrice <= 0)
+            {
+                return BadRequest("Vui lòng nhập 'Giá đến' khi đã nhập 'Giá từ'");
+            }
+
+            if (input.MinPrice > 0 && input.MaxPrice > 0 && input.MinPrice > input.MaxPrice)
+            {
+                return BadRequest("Giá từ không được lớn hơn giá đến");
+            }
+
             var result = await CatalogDataService.ListProductsAsync(input);
             ApplicationContext.SetSessionData(SEARCH_PRODUCT, input);
             return View(result);
@@ -105,40 +117,48 @@ namespace SV22T1020779.Admin.Controllers
                 ViewBag.Title = data.ProductID == 0 ? "Bổ sung Mặt hàng" : "Cập nhật thông tin Mặt hàng";
 
                 // Kiểm tra dữ liệu đầu vào
+                if (data.CategoryID <= 0)
+                    ModelState.AddModelError(nameof(data.CategoryID), "Vui lòng chọn loại hàng");
+
+                if (data.SupplierID <= 0)
+                    ModelState.AddModelError(nameof(data.SupplierID), "Vui lòng chọn nhà cung cấp");
                 if (string.IsNullOrWhiteSpace(data.ProductName))
                     ModelState.AddModelError(nameof(data.ProductName), "Vui lòng nhập tên mặt hàng");
                 if (string.IsNullOrWhiteSpace(data.Unit))
                     ModelState.AddModelError(nameof(data.Unit), "Vui lòng nhập đơn vị tính");
                 if (data.Price < 0)
                     ModelState.AddModelError(nameof(data.Price), "Giá không được âm");
+                if (data.Price == 0)
+                    ModelState.AddModelError(nameof(data.Price), "Vui lòng nhập giá bán lớn hơn 0");
 
                 if (!ModelState.IsValid)
-                    return View("Edit", data);
+                {
+                    ViewBag.ProductID = data.ProductID;
+                    ViewBag.PhotoList = await CatalogDataService.ListPhotosAsync(data.ProductID) ?? new List<ProductPhoto>();
+                    ViewBag.AttributeList = await CatalogDataService.ListAttributesAsync(data.ProductID) ?? new List<ProductAttribute>();
 
-                // Xử lý upload ảnh đại diện
+                    return View("Edit", data);
+                }
+
                 if (uploadPhoto != null)
                 {
                     var fileName = $"{Guid.NewGuid()}{Path.GetExtension(uploadPhoto.FileName)}";
                     var folder = "products";
                     var filePath = Path.Combine(ApplicationContext.WWWRootPath, "images", folder, fileName);
 
-                    // Dùng khối using để đảm bảo file được ghi xong và ĐÓNG LẠI hoàn toàn
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await uploadPhoto.CopyToAsync(stream);
                     }
 
-                    // CHỈ GỌI SYNC KHI FILE ĐÃ ĐÓNG (nằm ngoài khối using)
                     ImageSyncHelper.SyncToShop(fileName, folder);
 
                     data.Photo = fileName;
                 }
 
-                // Tiền xử lý dữ liệu
                 if (string.IsNullOrEmpty(data.Photo)) data.Photo = "";
                 if (string.IsNullOrEmpty(data.ProductDescription)) data.ProductDescription = "";
 
-                // Lưu vào database
                 if (data.ProductID == 0)
                     await CatalogDataService.AddProductAsync(data);
                 else

@@ -366,6 +366,37 @@ namespace SV22T1020779.BusinessLayers
             return 0;
         }
 
+        /// <summary>
+        /// Lưu thông tin chi tiết đơn hàng (Cập nhật nếu đã tồn tại, thêm mới nếu chưa có)
+        /// </summary>
+        public static async Task<bool> SaveOrderDetailAsync(int orderID, int productID, int quantity, decimal salePrice)
+        {
+            var order = await orderDB.GetAsync(orderID);
+            if (order == null) return false;
+
+            // Chỉ cho phép sửa khi đơn hàng mới hoặc đang là giỏ hàng
+            if (order.Status != OrderStatusEnum.New && (int)order.Status != SHOPPING_CART_STATUS)
+                return false;
+
+            var detail = await orderDB.GetDetailAsync(orderID, productID);
+            if (detail == null)
+            {
+                return await orderDB.AddDetailAsync(new OrderDetail()
+                {
+                    OrderID = orderID,
+                    ProductID = productID,
+                    Quantity = quantity,
+                    SalePrice = salePrice
+                });
+            }
+            else
+            {
+                detail.Quantity = quantity;
+                detail.SalePrice = salePrice;
+                return await orderDB.UpdateDetailAsync(detail);
+            }
+        }
+
         #endregion
     }
 }
