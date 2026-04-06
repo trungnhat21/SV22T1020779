@@ -53,7 +53,7 @@
                                         </form>
                                     </td>
                                     <td class="text-end">@item.SalePrice.ToString("N0")</td>
-                                    <td class="text-end fw-bold text-primary">@subTotal.ToString("N0")</td>
+                                    <td class="text-end fw-bold text-primary">@subTotal.ToString("N0") <span class="text-danger">VNĐ</span></td>
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center gap-3">
                                             <a href="javascript:void(0)" class="text-primary" title="Sửa số lượng" onclick="enableEdit('@item.ProductID')">

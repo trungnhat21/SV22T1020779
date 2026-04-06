@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SV22T1020779.BusinessLayers;
 using SV22T1020779.Models.Sales;
-using SV22T1020779.Models.Common;
 
 namespace SV22T1020779.Shop.Controllers
 {
